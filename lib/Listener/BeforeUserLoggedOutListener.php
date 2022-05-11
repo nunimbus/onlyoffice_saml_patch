@@ -40,7 +40,10 @@ class BeforeUserLoggedOutListener implements IEventListener {
 	}
 
 	public function handle(Event $event): void {		
-		if ($event instanceof BeforeUserLoggedOutEvent) {
+		if (
+			$event instanceof BeforeUserLoggedOutEvent && 
+			OC::$server->getAppManager()->isEnabledForUser('onlyoffice')
+		) {
 			$timeFactory = new OC\AppFramework\Utility\TimeFactory();
 
 			// Should probably use something like https://github.com/jeremykendall/php-domain-parser to detect compound TLDs like .co.uk
