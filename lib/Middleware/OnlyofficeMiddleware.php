@@ -38,11 +38,14 @@ class OnlyofficeMiddleware extends Middleware {
 
 	public function beforeOutput($controller, $methodName, $output){
 		if (
-			$controller instanceof CallbackController ||
-			$controller instanceof EditorController ||
-			$controller instanceof FederationController ||
-			$controller instanceof SettingsController ||
-			$controller instanceof TemplateController			
+			(
+				$controller instanceof CallbackController ||
+				$controller instanceof EditorController ||
+				$controller instanceof FederationController ||
+				$controller instanceof SettingsController ||
+				$controller instanceof TemplateController
+			) &&
+			OC::$server->getAppManager()->isEnabledForUser('onlyoffice')
 		) {
 			$jwtSecret = OC::$server->getAppConfig()->getValue('onlyoffice', 'jwt_secret');
 
