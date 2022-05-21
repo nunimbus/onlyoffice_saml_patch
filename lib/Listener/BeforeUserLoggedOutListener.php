@@ -48,14 +48,17 @@ class BeforeUserLoggedOutListener implements IEventListener {
 
 			// Should probably use something like https://github.com/jeremykendall/php-domain-parser to detect compound TLDs like .co.uk
 			$ooURL = OC::$server->getAppConfig()->getValue('onlyoffice', 'DocumentServerUrl');
-			$ooURLParts = parse_url($ooURL);
-			$ooHostParts = explode('.', $ooURLParts['host']);
-			$domain = end($ooHostParts);
-			$domain = '.' . prev($ooHostParts) . '.' . $domain;
+			
+			if ($ooURL != null && filter_var($ooURL, FILTER_VALIDATE_URL)) {
+				$ooURLParts = parse_url($ooURL);
+				$ooHostParts = explode('.', $ooURLParts['host']);
+				$domain = end($ooHostParts);
+				$domain = '.' . prev($ooHostParts) . '.' . $domain;
 
-			unset($_COOKIE['onlyoffice_session_data']);
-			setcookie('onlyoffice_session_data', '', $timeFactory->getTime() - 3600, $ooURLParts['path'], $domain, false, false);
-			setcookie('onlyoffice_session_data', '', $timeFactory->getTime() - 3600, $ooURLParts['path'] . '/', $domain, false, false);
-		}		
+				unset($_COOKIE['onlyoffice_session_data']);
+				setcookie('onlyoffice_session_data', '', $timeFactory->getTime() - 3600, $ooURLParts['path'], $domain, false, false);
+				setcookie('onlyoffice_session_data', '', $timeFactory->getTime() - 3600, $ooURLParts['path'] . '/', $domain, false, false);
+			}		
+		}
 	}
 }
