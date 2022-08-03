@@ -25,7 +25,6 @@ namespace OCA\OnlyofficeSAMLPatch\AppInfo;
 
 use OCA\OnlyofficeSAMLPatch\Listener\BeforeUserLoggedOutListener;
 use OCA\OnlyofficeSAMLPatch\Middleware\OnlyofficeMiddleware;
-use OC_App;
 use OCP\AppFramework\QueryException;
 use OC\AppFramework\DependencyInjection\DIContainer;
 use OCP\User\Events\BeforeUserLoggedOutEvent;
@@ -45,24 +44,24 @@ class Application extends App implements IBootstrap {
 		parent::__construct(self::APP_ID, $urlParams);
 
 		// Registers the middleware
-		foreach (OC_App::getEnabledApps() as $appId) {
-			if ($appId == 'onlyoffice') {
-				try {
-					$appContainer = OC::$server->getRegisteredAppContainer($appId);
-				}
-				catch (QueryException $e) {
-					OC::$server->registerAppContainer($appId, new DIContainer($appId));
-					$appContainer = OC::$server->getRegisteredAppContainer($appId);	
-				}
+		$appId = 'onlyoffice';
 
-				$appContainer->registerService('OnlyofficeMiddleware', function($c){
-					return new OnlyofficeMiddleware(
-						$c->get(IRequest::class),
-						$c->get(IControllerMethodReflector::class)
-					);
-				});
-				$appContainer->registerMiddleware('OnlyofficeMiddleware');
+		if (OC::$server->getConfig()->getAppValue($appId, 'enabled', 'no') === 'yes') {
+			try {
+				$appContainer = OC::$server->getRegisteredAppContainer($appId);
 			}
+			catch (QueryException $e) {
+				OC::$server->registerAppContainer($appId, new DIContainer($appId));
+				$appContainer = OC::$server->getRegisteredAppContainer($appId);	
+			}
+
+			$appContainer->registerService('OnlyofficeMiddleware', function($c){
+				return new OnlyofficeMiddleware(
+					$c->get(IRequest::class),
+					$c->get(IControllerMethodReflector::class)
+				);
+			});
+			$appContainer->registerMiddleware('OnlyofficeMiddleware');
 		}
 	}
 
