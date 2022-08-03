@@ -9,8 +9,9 @@
 	<licence>agpl</licence>
 	<author>Andrew Summers</author>
 	<namespace>OnlyofficeSAMLPatch</namespace>
+	<default_enable/>
 	<types>
-		<authentication />
+		<prevent_group_restriction />
 	</types>
 	<category>tools</category>
 	<dependencies>
